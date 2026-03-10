@@ -754,6 +754,9 @@
         <button class="mode-tab active" onclick="switchPanel('chat',this)">💬 Chat</button>
         <button class="mode-tab" onclick="switchPanel('calc',this)">🔢 Calculator</button>
         <button class="mode-tab" onclick="switchPanel('quiz',this)">🧪 DFT Quiz</button>
+        <button class="mode-tab" onclick="switchPanel('verilog',this)">📝 Verilog</button>
+        <button class="mode-tab" onclick="switchPanel('component',this)">🔍 Components</button>
+        <button class="mode-tab" onclick="switchPanel('interview',this)">🏢 Interview</button>
       </div>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
     </div>
@@ -938,9 +941,94 @@
     <button class="mobile-tab" onclick="switchPanel('quiz',this,true)" id="mtab-quiz">
       <span class="tab-icon">🧪</span>Quiz
     </button>
+    <button class="mobile-tab" onclick="switchPanel('verilog',this,true)">
+      <span class="tab-icon">📝</span>Verilog
+    </button>
+    <button class="mobile-tab" onclick="switchPanel('interview',this,true)">
+      <span class="tab-icon">🏢</span>Interview
+    </button>
     <button class="mobile-tab" onclick="toggleTheme()">
       <span class="tab-icon" id="mobile-theme-icon">🌙</span>Theme
     </button>
+  </div>
+
+  <!-- VERILOG PANEL -->
+  <div class="panel" id="verilog-panel-wrap">
+    <div id="verilog-panel" style="padding:20px;overflow-y:auto">
+      <div class="panel-heading">📝 Verilog Code Analyzer</div>
+      <div class="panel-sub">Apna Verilog code paste karo — AI review karega</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+        <div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">Verilog Code Yahan Paste Karo:</div>
+          <textarea id="verilog-input" style="width:100%;height:300px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-family:monospace;font-size:0.82rem;resize:vertical;outline:none;line-height:1.5" placeholder="// Apna Verilog code yahan paste karo
+module example(
+  input clk, rst,
+  output reg q
+);
+// ...
+endmodule"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <button class="calc-btn" style="flex:1;min-width:120px" onclick="analyzeVerilog('review')">🔍 Code Review</button>
+            <button class="calc-btn" style="flex:1;min-width:120px;background:linear-gradient(135deg,#4DA6FF,#7B6FFF)" onclick="analyzeVerilog('dft')">🧪 DFT Analysis</button>
+            <button class="calc-btn" style="flex:1;min-width:120px;background:linear-gradient(135deg,#00E5A0,#00A070)" onclick="analyzeVerilog('scan')">⛓️ Scan Suggestion</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">AI Analysis Result:</div>
+          <div id="verilog-result" style="width:100%;min-height:300px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-size:0.85rem;line-height:1.6;white-space:pre-wrap;overflow-y:auto">AI ka analysis yahan dikhega...</div>
+          <div id="verilog-loading" style="display:none;text-align:center;padding:20px;color:var(--saffron)">⚡ Analyzing...</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:8px">Quick Examples:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="qchip" onclick="loadExample('dff')">D Flip-Flop</button>
+          <button class="qchip" onclick="loadExample('counter')">4-bit Counter</button>
+          <button class="qchip" onclick="loadExample('mux')">2:1 MUX</button>
+          <button class="qchip" onclick="loadExample('alu')">Simple ALU</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPONENT PANEL -->
+  <div class="panel" id="component-panel-wrap">
+    <div id="component-panel" style="padding:20px;overflow-y:auto">
+      <div class="panel-heading">🔍 Component Search</div>
+      <div class="panel-sub">Indian market mein components dhundho — price aur availability</div>
+      <div style="display:flex;gap:8px;margin-top:12px;margin-bottom:16px">
+        <input id="comp-search" class="calc-input" style="flex:1;padding:10px 16px;border-radius:10px" placeholder="e.g. 555 timer, op-amp LM741, 100 ohm resistor..." onkeydown="if(event.key==='Enter')searchComponent()"/>
+        <button class="calc-btn" style="width:100px;margin:0" onclick="searchComponent()">Search 🔍</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="qchip" onclick="quickComp('555 timer IC')">555 Timer</button>
+        <button class="qchip" onclick="quickComp('LM741 op-amp')">LM741 Op-Amp</button>
+        <button class="qchip" onclick="quickComp('Arduino Uno')">Arduino Uno</button>
+        <button class="qchip" onclick="quickComp('ESP32 module')">ESP32</button>
+        <button class="qchip" onclick="quickComp('10k resistor')">10k Resistor</button>
+        <button class="qchip" onclick="quickComp('100uF capacitor')">100uF Cap</button>
+        <button class="qchip" onclick="quickComp('7segment display')">7-Seg Display</button>
+        <button class="qchip" onclick="quickComp('L298N motor driver')">L298N Driver</button>
+      </div>
+      <div id="comp-result" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;min-height:200px;white-space:pre-wrap;font-size:0.88rem;line-height:1.7">Component search karein — Indian market prices aur availability dikhegi 🇮🇳</div>
+      <div id="comp-loading" style="display:none;text-align:center;padding:30px;color:var(--saffron);font-size:1rem">⚡ Searching Indian market...</div>
+    </div>
+  </div>
+
+  <!-- INTERVIEW PANEL -->
+  <div class="panel" id="interview-panel-wrap">
+    <div id="interview-panel" style="padding:20px;overflow-y:auto">
+      <div class="panel-heading">🏢 Interview Questions Bank</div>
+      <div class="panel-sub">Company-wise interview preparation — DFT, VLSI, ECE</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;margin-bottom:16px">
+        <button class="quiz-cat-btn active" id="ibtn-micron" onclick="loadInterview('micron',this)">🏭 Micron</button>
+        <button class="quiz-cat-btn" id="ibtn-einfo" onclick="loadInterview('einfo',this)">💼 eInfochips</button>
+        <button class="quiz-cat-btn" id="ibtn-qualcomm" onclick="loadInterview('qualcomm',this)">📱 Qualcomm</button>
+        <button class="quiz-cat-btn" id="ibtn-intel" onclick="loadInterview('intel',this)">⚡ Intel</button>
+        <button class="quiz-cat-btn" id="ibtn-general" onclick="loadInterview('general',this)">🎯 General DFT</button>
+      </div>
+      <div id="interview-content" style="display:grid;grid-template-columns:1fr;gap:12px"></div>
+    </div>
   </div>
 
   <footer>Made with ❤️ for India • <span>CircuitMitra AI</span> • Hindi • ગુજરાતી • English 🇮🇳</footer>
@@ -1340,8 +1428,159 @@ function showScore() {
   document.getElementById('quiz-next').style.display='none';
 }
 
+
+// ── VERILOG ANALYZER ──
+const verilogExamples = {
+  dff: `module dff(input clk, rst, d, output reg q);
+  always @(posedge clk or posedge rst)
+    if(rst) q <= 0;
+    else q <= d;
+endmodule`,
+  counter: `module counter4bit(input clk, rst, output reg [3:0] count);
+  always @(posedge clk or posedge rst)
+    if(rst) count <= 4'b0000;
+    else count <= count + 1;
+endmodule`,
+  mux: `module mux2to1(input a, b, sel, output y);
+  assign y = sel ? b : a;
+endmodule`,
+  alu: `module alu(input [7:0] a, b, input [1:0] op, output reg [7:0] result);
+  always @(*) begin
+    case(op)
+      2'b00: result = a + b;
+      2'b01: result = a - b;
+      2'b10: result = a & b;
+      2'b11: result = a | b;
+    endcase
+  end
+endmodule`
+};
+
+function loadExample(type) {
+  document.getElementById('verilog-input').value = verilogExamples[type] || '';
+}
+
+async function analyzeVerilog(type) {
+  const code = document.getElementById('verilog-input').value.trim();
+  if (!code) return alert('Pehle Verilog code paste karo!');
+  document.getElementById('verilog-result').style.display='none';
+  document.getElementById('verilog-loading').style.display='block';
+  const prompts = {
+    review: `Tu ek senior VLSI engineer hai. Is Verilog code ka detailed review karo Hindi mein:\n1. Code ki summary\n2. Kya sahi hai\n3. Kya improve ho sakta hai\n4. Timing issues?\n5. Synthesis ke liye ready hai?\n\nCode:\n${code}`,
+    dft: `Tu ek DFT expert hai. Is Verilog code ka DFT analysis karo Hindi mein:\n1. Testability kitni hai?\n2. Scan insertion possible hai?\n3. Fault coverage estimate\n4. ATPG suggestions\n5. DFT improvements\n\nCode:\n${code}`,
+    scan: `Tu ek scan insertion expert hai. Is code mein scan chain kaise add karein:\n1. Konse flip-flops scan banne chahiye\n2. Scan chain order suggest karo\n3. Modified code snippets\n4. Expected fault coverage\n\nCode:\n${code}`
+  };
+  try {
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: prompts[type]})
+    });
+    const data = await res.json();
+    document.getElementById('verilog-loading').style.display='none';
+    document.getElementById('verilog-result').style.display='block';
+    document.getElementById('verilog-result').textContent = data.response;
+  } catch(e) {
+    document.getElementById('verilog-loading').style.display='none';
+    document.getElementById('verilog-result').style.display='block';
+    document.getElementById('verilog-result').textContent = 'Error! Server check karo.';
+  }
+}
+
+// ── COMPONENT SEARCH ──
+function quickComp(q) {
+  document.getElementById('comp-search').value = q;
+  searchComponent();
+}
+
+async function searchComponent() {
+  const query = document.getElementById('comp-search').value.trim();
+  if (!query) return;
+  document.getElementById('comp-result').style.display='none';
+  document.getElementById('comp-loading').style.display='block';
+  const prompt = `Tu ek Indian electronics component expert hai. "${query}" ke baare mein Hindi mein batao:\n1. Component kya hai\n2. Indian market price (Robu.in, Mouser India)\n3. Popular alternatives\n4. Kahan milega India mein\n5. ECE projects mein use\n6. Key specs`;
+  try {
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: prompt})
+    });
+    const data = await res.json();
+    document.getElementById('comp-loading').style.display='none';
+    document.getElementById('comp-result').style.display='block';
+    document.getElementById('comp-result').textContent = data.response;
+  } catch(e) {
+    document.getElementById('comp-loading').style.display='none';
+    document.getElementById('comp-result').textContent = 'Error! Server check karo.';
+  }
+}
+
+// ── INTERVIEW BANK ──
+const interviewData = {
+  micron: [
+    { q: "Micron Sanand mein DFT engineer ka kaam kya hoga?", a: "Memory BIST implementation, Wafer level testing, ATPG pattern optimization, Scan chain debug, Yield improvement. Focus on DRAM/NAND flash testing." },
+    { q: "Memory BIST kya hai?", a: "Memory BIST: Chip ke andar memory testing circuit. MARCH algorithms use karta hai. Faults detect karta hai: Stuck-at, Transition, Coupling faults in memory cells." },
+    { q: "ATPG pattern compression kyu zaroori hai?", a: "Test time kam ho, Tester memory save ho, Cost of test kam ho. Techniques: EDT, OPMISR. 10x-100x compression typical hai." },
+    { q: "Boundary scan kya hai?", a: "Boundary scan (JTAG IEEE 1149.1): PCB level testing. TAP controller 5 states mein. PCB assembly ke baad interconnect test ke liye." },
+    { q: "Fault coverage 95% se 99% kaise badhayein?", a: "1) Untestable faults identify karo 2) Test points add karo 3) Scan compression improve karo 4) Transition fault patterns add karo 5) At-speed testing implement karo." }
+  ],
+  einfo: [
+    { q: "eInfochips DFT flow kaisa hota hai?", a: "1) RTL Review 2) Scan insertion (Tessent/DFT Compiler) 3) ATPG pattern generation 4) Fault simulation 5) Pattern verification 6) Tester ready format." },
+    { q: "OCC kya hai?", a: "OCC (On-Chip Clock Controller): At-speed testing ke liye clock control. Launch-capture clock generate karta hai. Transition fault testing mein zaroori hai." },
+    { q: "Tessent tool mein scan insertion kaise karte hain?", a: "1) set_design_source 2) analyze_design (DRC) 3) insert_test_logic 4) extract_patterns (ATPG) 5) report_statistics. Tcl scripting use hoti hai." },
+    { q: "Scan chain reordering kyu karte hain?", a: "1) Routing congestion kam karo 2) Power during shift reduce karo 3) Signal integrity improve karo. Tools automatically optimize karte hain." },
+    { q: "Static vs Dynamic power testing?", a: "Static (IDDQ): DC current measure, stuck-open faults. Dynamic (IDDT): Switching current, delay faults. Modern chips mein dono zaroori hain." }
+  ],
+  qualcomm: [
+    { q: "SoC DFT challenges kya hain?", a: "1) Multiple clock domains 2) Hierarchical scan 3) Embedded memories BIST 4) Analog testing 5) Power domain isolation 6) At-speed testing at GHz." },
+    { q: "Hierarchical DFT kya hai?", a: "Large SoC ko blocks mein divide karo. Har block apna scan chain rakhta hai. Core-level aur chip-level patterns alag. TAM (Test Access Mechanism) use hota hai." },
+    { q: "IEEE 1500 standard kya hai?", a: "Embedded Core Test standard. Core wrapper define karta hai. WPI, WPO, WSI/WSO ports. SoC integration mein use hota hai." },
+    { q: "At-speed testing kyu zaroori hai?", a: "Chip ki actual operating frequency pe test. Slow path defects detect karta hai jo stuck-at miss karte hain. Launch-capture sequences use hoti hain." },
+    { q: "Power aware DFT kya hai?", a: "Scan shift ke time power control. Techniques: Scan segmentation, Clock gating, Slow shift frequency, Low power ATPG. IR drop avoid karna important." }
+  ],
+  intel: [
+    { q: "Intel mein DFT ka scope kya hai?", a: "Pre-silicon DFT insertion, ATPG, Silicon validation, Post-silicon debug, Manufacturing test optimization, Yield ramp. Tools: Tessent, custom tools." },
+    { q: "JTAG TAP controller ke states batao", a: "16 states: Test-Logic-Reset, Run-Test/Idle, Select-DR/IR, Capture-DR/IR, Shift-DR/IR, Exit1/2-DR/IR, Pause-DR/IR, Update-DR/IR. TMS signal se navigate karte hain." },
+    { q: "Scan enable timing kya hota hai?", a: "SE signal setup/hold timing critical hota hai. SE late arrive kiya to scan data corrupt. SE timing check separately verify karta hai DFT tool." },
+    { q: "Debug scan kya hai?", a: "Normal scan se alag - slow frequency pe operate. Post-silicon debug ke liye. Internal node observe kar sakte ho. LBIST fail analysis mein helpful." },
+    { q: "Tcl scripting DFT mein kaise use hoti hai?", a: "1) EDA tool automation 2) Scan insertion scripts 3) Constraint files 4) Reports parse karo 5) Batch ATPG runs. Ye skill har DFT job mein required hai." }
+  ],
+  general: [
+    { q: "DFT aur verification mein kya fark hai?", a: "Verification: RTL functionality check. DFT: Manufacturing defects detect ke liye testability add karna. Verification pre-silicon, DFT manufacturing test ke liye." },
+    { q: "Transition fault model kya hai?", a: "Gate delay defects detect karta hai. Slow-to-rise (STR) aur Slow-to-fall (STF) faults. At-speed testing se detect hota hai. Stuck-at se zyada faults cover karta hai." },
+    { q: "Fault coverage vs Test coverage fark?", a: "Fault coverage = detected/total faults x 100%. Test coverage = tested/total nodes x 100%. Fault coverage zyada important. Standard: 95%+ stuck-at, 90%+ transition." },
+    { q: "Scan compression explain karo", a: "EDT (Embedded Deterministic Test): Compactor aur decompactor add hote hain. External channels kam, internal chains zyada. 10x-100x compression. Test time dramatically kam." },
+    { q: "Freshers ke liye DFT entry point?", a: "1) ATPG engineer 2) DFT verification 3) Test automation (Tcl) 4) Physical DFT. Skills: Verilog, Tcl, DFT concepts, EDA tools basic knowledge." }
+  ]
+};
+
+function loadInterview(company, btn) {
+  document.querySelectorAll('.quiz-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const questions = interviewData[company] || [];
+  const container = document.getElementById('interview-content');
+  container.innerHTML = questions.map((item, i) => `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer" onclick="toggleAnswer(${i})">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:600;font-size:0.9rem;color:var(--text);flex:1">Q${i+1}. ${item.q}</div>
+        <span id="arrow-${i}" style="color:var(--saffron);font-size:1.1rem;flex-shrink:0;margin-left:8px">▼</span>
+      </div>
+      <div id="ans-${i}" style="display:none;margin-top:10px;padding:12px;background:rgba(255,107,0,0.06);border-radius:8px;font-size:0.85rem;line-height:1.65;color:var(--text);border-left:3px solid var(--saffron)">${item.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleAnswer(i) {
+  const ans = document.getElementById(`ans-${i}`);
+  const arrow = document.getElementById(`arrow-${i}`);
+  const visible = ans.style.display !== 'none';
+  ans.style.display = visible ? 'none' : 'block';
+  arrow.textContent = visible ? '▼' : '▲';
+}
+
 // Init
 renderHistory();
+loadInterview("micron", document.getElementById("ibtn-micron"));
 loadQuiz();
 </script>
 </body>
