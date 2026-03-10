@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CircuitMitra AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --saffron: #FF6B00;
+      --deep: #0D0D1A;
+      --card: #13132A;
+      --border: #2A2A4A;
+      --green: #00E5A0;
+      --blue: #4DA6FF;
+      --text: #E8E8F5;
+      --muted: #7070A0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--deep);
+      color: var(--text);
+      font-family: 'Noto Sans Devanagari', 'Baloo 2', 'Noto Sans Gujarati', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,107,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,107,0,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      width: 100%;
+      max-width: 860px;
+      padding: 28px 24px 12px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      animation: fadeDown 0.7s ease both;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 6px;
+    }
+
+    .logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--saffron), #FFB300);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 0 30px rgba(255,107,0,0.4);
+    }
+
+    h1 {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(90deg, var(--saffron), #FFB300, var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .tagline span { color: var(--green); font-weight: 600; }
+
+    /* Language indicator */
+    .lang-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 10px 0 4px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .lang-pill {
+      padding: 4px 14px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-pill.active-hi { border-color: #FF6B00; color: #FF6B00; background: rgba(255,107,0,0.08); }
+    .lang-pill.active-gu { border-color: #FFB300; color: #FFB300; background: rgba(255,179,0,0.08); }
+    .lang-pill.active-en { border-color: #00E5A0; color: #00E5A0; background: rgba(0,229,160,0.08); }
+
+    /* Language section tabs */
+    .lang-tabs {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 8px 0;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.7s 0.15s ease both;
+    }
+
+    .lang-tab {
+      padding: 5px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .lang-tab:hover { border-color: var(--saffron); color: var(--saffron); }
+    .lang-tab.selected { background: rgba(255,107,0,0.15); border-color: var(--saffron); color: var(--saffron); }
+
+    /* Chips */
+    .chips-section {
+      width: 100%;
+      max-width: 860px;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .chips-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 5px 13px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover { border-color: var(--saffron); color: var(--saffron); transform: translateY(-2px); }
+    .chip.hi { border-color: rgba(255,107,0,0.3); }
+    .chip.gu { border-color: rgba(255,179,0,0.3); }
+    .chip.en { border-color: rgba(0,229,160,0.3); }
+
+    /* Chat */
+    .chat-wrap {
+      width: 100%; max-width: 860px;
+      flex: 1; display: flex; flex-direction: column;
+      padding: 0 16px 16px;
+      position: relative; z-index: 1;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    #chat-box {
+      flex: 1;
+      min-height: 340px; max-height: 420px;
+      overflow-y: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex; flex-direction: column;
+      gap: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .msg { display: flex; gap: 10px; animation: msgPop 0.3s ease both; }
+    .msg.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+
+    .msg.user .avatar { background: linear-gradient(135deg, var(--blue), #7B6FFF); }
+    .msg.bot .avatar { background: linear-gradient(135deg, var(--saffron), #FFB300); box-shadow: 0 0 16px rgba(255,107,0,0.3); }
+
+    .bubble {
+      max-width: 78%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.93rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .msg.user .bubble {
+      background: linear-gradient(135deg, rgba(77,166,255,0.15), rgba(123,111,255,0.15));
+      border: 1px solid rgba(77,166,255,0.25);
+      border-top-right-radius: 4px;
+    }
+
+    .msg.bot .bubble {
+      background: rgba(255,107,0,0.07);
+      border: 1px solid rgba(255,107,0,0.2);
+      border-top-left-radius: 4px;
+    }
+
+    /* Lang badge on bot message */
+    .lang-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .lang-badge.hi { background: rgba(255,107,0,0.2); color: #FF6B00; }
+    .lang-badge.gu { background: rgba(255,179,0,0.2); color: #FFB300; }
+    .lang-badge.en { background: rgba(0,229,160,0.2); color: #00E5A0; }
+
+    .welcome {
+      text-align: center; padding: 24px 20px; color: var(--muted);
+    }
+    .welcome .big { font-size: 2.2rem; margin-bottom: 8px; }
+    .welcome h3 { color: var(--text); font-family: 'Baloo 2'; font-size: 1.15rem; margin-bottom: 8px; }
+    .welcome .langs { display: flex; gap: 8px; justify-content: center; font-size: 0.85rem; flex-wrap: wrap; margin-top: 8px; }
+    .welcome .langs span { padding: 3px 10px; border-radius: 99px; }
+    .welcome .langs .hi { background: rgba(255,107,0,0.15); color: #FF6B00; }
+    .welcome .langs .gu { background: rgba(255,179,0,0.15); color: #FFB300; }
+    .welcome .langs .en { background: rgba(0,229,160,0.15); color: #00E5A0; }
+
+    .typing .bubble { display: flex; gap: 5px; align-items: center; padding: 14px 18px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--saffron); animation: bounce 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    .input-area {
+      display: flex; gap: 10px; margin-top: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 10px 10px 18px;
+      transition: border-color 0.2s;
+    }
+
+    .input-area:focus-within { border-color: var(--saffron); box-shadow: 0 0 20px rgba(255,107,0,0.1); }
+
+    #user-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-family: inherit; font-size: 0.95rem;
+      resize: none; max-height: 100px;
+    }
+
+    #user-input::placeholder { color: var(--muted); }
+
+    #send-btn {
+      background: linear-gradient(135deg, var(--saffron), #FFB300);
+      border: none; border-radius: 10px;
+      width: 44px; height: 44px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; transition: transform 0.15s, box-shadow 0.15s; flex-shrink: 0;
+    }
+
+    #send-btn:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(255,107,0,0.4); }
+    #send-btn:active { transform: scale(0.95); }
+
+    footer {
+      text-align: center; padding: 10px;
+      font-size: 0.72rem; color: var(--muted);
+      position: relative; z-index: 1;
+    }
+    footer span { color: var(--saffron); }
+
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes msgPop { from { opacity:0; transform:scale(0.95) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    @keyframes bounce { 0%,80%,100% { transform:translateY(0); } 40% { transform:translateY(-6px); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <img src="/static/logo.png" width="52" height="52" style="border-radius:14px;object-fit:cover;"/>
+    <h1>CircuitMitra AI</h1>
+  </div>
+  <p class="tagline">India's First ECE AI • <span>Hindi • ગુજરાતી • English</span> • Auto Language Detection 🇮🇳</p>
+</header>
+
+<!-- Language indicator pills -->
+<div class="lang-bar">
+  <div class="lang-pill active-hi">🟠 हिंदी</div>
+  <div class="lang-pill active-gu">🟡 ગુજરાતી</div>
+  <div class="lang-pill active-en">🟢 English</div>
+</div>
+
+<!-- Quick chips - all 3 languages -->
+<div class="chips-section">
+  <!-- Language filter tabs -->
+  <div class="lang-tabs">
+    <button class="lang-tab selected" onclick="filterChips('all')">All</button>
+    <button class="lang-tab" onclick="filterChips('hi')">हिंदी</button>
+    <button class="lang-tab" onclick="filterChips('gu')">ગુજરાતી</button>
+    <button class="lang-tab" onclick="filterChips('en')">English</button>
+  </div>
+
+  <div class="chips" id="chips-container">
+    <!-- Hindi chips -->
+    <div class="chip hi" onclick="quickAsk('स्कैन चेन क्या होता है?')">🔬 स्कैन चेन</div>
+    <div class="chip hi" onclick="quickAsk('ATPG क्या है DFT में?')">🧪 ATPG</div>
+    <div class="chip hi" onclick="quickAsk('LED के लिए 5V पर resistance कितनी?')">💡 LED सर्किट</div>
+    <div class="chip hi" onclick="quickAsk('Op-amp क्या होता है?')">⚡ Op-Amp</div>
+
+    <!-- Gujarati chips -->
+    <div class="chip gu" onclick="quickAsk('સ્કેન ચેઇન શું છે?')">🔬 સ્કેન ચેઇન</div>
+    <div class="chip gu" onclick="quickAsk('JTAG શું છે અને કેવી રીતે કામ કરે છે?')">🔧 JTAG</div>
+    <div class="chip gu" onclick="quickAsk('LED માટે resistance કેટલી જોઈએ?')">💡 LED સર્કિટ</div>
+    <div class="chip gu" onclick="quickAsk('DFT એટલે શું?')">🧠 DFT</div>
+
+    <!-- English chips -->
+    <div class="chip en" onclick="quickAsk('What is scan chain in DFT?')">🔬 Scan Chain</div>
+    <div class="chip en" onclick="quickAsk('Explain ATPG and fault coverage')">🧪 ATPG</div>
+    <div class="chip en" onclick="quickAsk('How to design an op-amp circuit?')">⚡ Op-Amp</div>
+    <div class="chip en" onclick="quickAsk('What is JTAG boundary scan?')">🔧 JTAG</div>
+  </div>
+</div>
+
+<div class="chat-wrap">
+  <div id="chat-box">
+    <div class="welcome">
+      <div class="big">🇮🇳</div>
+      <h3>CircuitMitra AI mein aapka swagat hai!</h3>
+      <p>Apni language mein ECE ke sawaal puchho — main automatically samjhunga!</p>
+      <div class="langs">
+        <span class="hi">हिंदी में पूछो</span>
+        <span class="gu">ગુજરાતીમાં પૂછો</span>
+        <span class="en">Ask in English</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <textarea id="user-input" rows="1"
+      placeholder="Hindi, Gujarati ya English mein puchho... ⚡"></textarea>
+    <button id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<footer>
+  Made with ❤️ for India • <span>CircuitMitra AI</span> • Auto detects Hindi • ગુજરાતી • English
+</footer>
+
+<script>
+  const chatBox = document.getElementById('chat-box');
+  const input = document.getElementById('user-input');
+
+  // Detect language from text
+  function detectLang(text) {
+    const gujaratiRange = /[\u0A80-\u0AFF]/;
+    const hindiRange = /[\u0900-\u097F]/;
+    if (gujaratiRange.test(text)) return 'gu';
+    if (hindiRange.test(text)) return 'hi';
+    return 'en';
+  }
+
+  const langLabels = {
+    hi: { label: 'हिंदी', cls: 'hi' },
+    gu: { label: 'ગુજરાતી', cls: 'gu' },
+    en: { label: 'English', cls: 'en' }
+  };
+
+  // Filter chips by language
+  function filterChips(lang) {
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('selected'));
+    event.target.classList.add('selected');
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      if (lang === 'all') {
+        chip.style.display = 'block';
+      } else {
+        chip.style.display = chip.classList.contains(lang) ? 'block' : 'none';
+      }
+    });
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = input.scrollHeight + 'px';
+  });
+
+  function quickAsk(q) { input.value = q; sendMessage(); }
+
+  function addMessage(text, role, lang) {
+    const welcome = chatBox.querySelector('.welcome');
+    if (welcome) welcome.remove();
+
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = role === 'user' ? '👤' : '⚡';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    // Add language badge for bot messages
+    if (role === 'bot' && lang) {
+      const badge = document.createElement('div');
+      badge.className = `lang-badge ${lang}`;
+      badge.textContent = langLabels[lang]?.label || lang;
+      bubble.appendChild(badge);
+      bubble.appendChild(document.createElement('br'));
+    }
+
+    const textNode = document.createTextNode(text);
+    bubble.appendChild(textNode);
+
+    div.appendChild(avatar);
+    div.appendChild(bubble);
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg bot typing'; div.id = 'typing';
+    div.innerHTML = `<div class="avatar">⚡</div><div class="bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing');
+    if (t) t.remove();
+  }
+
+  async function sendMessage() {
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const userLang = detectLang(msg);
+    addMessage(msg, 'user', null);
+    input.value = '';
+    input.style.height = 'auto';
+    showTyping();
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      removeTyping();
+      const responseLang = detectLang(data.response);
+      addMessage(data.response, 'bot', responseLang);
+    } catch (err) {
+      removeTyping();
+      addMessage('❌ Connection error. app.py chal raha hai kya?', 'bot', 'en');
+    }
+  }
+</script>
+</body>
+</html>
