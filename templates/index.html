@@ -1,133 +1,545 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CircuitMitra AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --saffron: #FF6B00;
-      --deep: #0D0D1A;
+    :root[data-theme="dark"] {
+      --bg: #0D0D1A;
       --card: #13132A;
       --border: #2A2A4A;
-      --green: #00E5A0;
-      --blue: #4DA6FF;
       --text: #E8E8F5;
       --muted: #7070A0;
+      --saffron: #FF6B00;
+      --gold: #FFB300;
+      --green: #00E5A0;
+      --blue: #4DA6FF;
+      --user-bubble: rgba(77,166,255,0.15);
+      --user-border: rgba(77,166,255,0.25);
+      --bot-bubble: rgba(255,107,0,0.07);
+      --bot-border: rgba(255,107,0,0.2);
+      --sidebar: #0F0F20;
+      --input-bg: #13132A;
+    }
+    :root[data-theme="light"] {
+      --bg: #F5F5FF;
+      --card: #FFFFFF;
+      --border: #E0E0F0;
+      --text: #1A1A2E;
+      --muted: #8080A0;
+      --saffron: #FF6B00;
+      --gold: #E69500;
+      --green: #00A070;
+      --blue: #2080E0;
+      --user-bubble: rgba(77,166,255,0.1);
+      --user-border: rgba(77,166,255,0.3);
+      --bot-bubble: rgba(255,107,0,0.05);
+      --bot-border: rgba(255,107,0,0.2);
+      --sidebar: #EBEBFF;
+      --input-bg: #FFFFFF;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
-      background: var(--deep);
+      background: var(--bg);
       color: var(--text);
-      font-family: 'Noto Sans Devanagari', 'Baloo 2', 'Noto Sans Gujarati', sans-serif;
+      font-family: 'Noto Sans Devanagari','Baloo 2','Noto Sans Gujarati',sans-serif;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      transition: background 0.3s, color 0.3s;
     }
 
+    /* Grid bg */
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
+      content:'';
+      position:fixed; inset:0;
       background-image:
-        linear-gradient(rgba(255,107,0,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,107,0,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
+        linear-gradient(rgba(255,107,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,107,0,0.03) 1px, transparent 1px);
+      background-size:40px 40px;
+      pointer-events:none; z-index:0;
     }
 
-    header {
-      width: 100%;
-      max-width: 860px;
-      padding: 28px 24px 12px;
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      animation: fadeDown 0.7s ease both;
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top:0; left:0; bottom:0;
+      z-index: 100;
+      transition: transform 0.3s;
     }
 
-    .logo-row {
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 14px;
-      margin-bottom: 6px;
+      gap: 10px;
     }
 
-    .logo-icon {
-      width: 52px; height: 52px;
-      background: linear-gradient(135deg, var(--saffron), #FFB300);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 0 30px rgba(255,107,0,0.4);
+    .sidebar-logo {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    h1 {
-      font-family: 'Baloo 2', sans-serif;
-      font-size: 2.4rem; font-weight: 800;
-      background: linear-gradient(90deg, var(--saffron), #FFB300, var(--green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .sidebar-logo img { width:100%; height:100%; object-fit:cover; }
+    .sidebar-logo-fallback {
+      width:100%; height:100%;
+      background: linear-gradient(135deg,var(--saffron),var(--gold));
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
     }
 
-    .tagline {
-      font-size: 0.88rem;
+    .sidebar-title {
+      font-family:'Baloo 2',sans-serif;
+      font-weight:800; font-size:1rem;
+      background: linear-gradient(90deg,var(--saffron),var(--gold));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .new-chat-btn {
+      margin: 12px;
+      padding: 10px;
+      background: linear-gradient(135deg,var(--saffron),var(--gold));
+      border: none; border-radius: 10px;
+      color: white; font-weight: 700;
+      font-size: 0.85rem; cursor: pointer;
+      display: flex; align-items: center;
+      justify-content: center; gap: 6px;
+      transition: transform 0.15s;
+    }
+
+    .new-chat-btn:hover { transform: scale(1.02); }
+
+    .history-label {
+      padding: 8px 16px 4px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       color: var(--muted);
-      margin-top: 4px;
     }
 
-    .tagline span { color: var(--green); font-weight: 600; }
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 8px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
 
-    /* Language indicator */
-    .lang-bar {
+    .history-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-item:hover { background: var(--card); color: var(--text); }
+    .history-item.active { background: rgba(255,107,0,0.1); color: var(--saffron); }
+
+    .history-item .del-btn {
+      margin-left: auto;
+      opacity: 0;
+      font-size: 0.75rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .history-item:hover .del-btn { opacity: 1; }
+
+    /* Sidebar bottom */
+    .sidebar-bottom {
+      padding: 12px;
+      border-top: 1px solid var(--border);
       display: flex;
       gap: 8px;
-      justify-content: center;
-      margin: 10px 0 4px;
-      position: relative;
-      z-index: 1;
-      animation: fadeUp 0.6s 0.1s ease both;
     }
 
-    .lang-pill {
-      padding: 4px 14px;
+    .icon-btn {
+      flex: 1;
+      padding: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: flex; align-items: center;
+      justify-content: center; gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover { border-color: var(--saffron); color: var(--saffron); }
+
+    /* ── MAIN AREA ── */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      position: sticky; top: 0; z-index: 50;
+    }
+
+    .menu-btn {
+      display: none;
+      background: none; border: none;
+      color: var(--text); font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .topbar-title {
+      font-family:'Baloo 2',sans-serif;
+      font-weight:800; font-size:1.1rem;
+      background: linear-gradient(90deg,var(--saffron),var(--gold));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      flex:1;
+    }
+
+    .topbar-actions { display:flex; gap:8px; align-items:center; }
+
+    /* Mode tabs */
+    .mode-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mode-tab {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .mode-tab.active { background: rgba(255,107,0,0.15); border-color: var(--saffron); color: var(--saffron); }
+
+    /* Theme toggle */
+    .theme-toggle {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+
+    .theme-toggle:hover { border-color: var(--saffron); }
+
+    /* ── CHAT PANEL ── */
+    .panel { display: none; flex: 1; flex-direction: column; }
+    .panel.active { display: flex; }
+
+    /* Chat */
+    #chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 20px;
+    }
+
+    /* Language chips */
+    .lang-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .lang-chip {
+      padding: 4px 12px;
       border-radius: 99px;
       font-size: 0.75rem;
       font-weight: 600;
       border: 1px solid var(--border);
       color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-chip:hover, .lang-chip.sel { border-color: var(--saffron); color: var(--saffron); background: rgba(255,107,0,0.08); }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .qchip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .qchip:hover { border-color: var(--saffron); color: var(--saffron); transform: translateY(-2px); }
+
+    #chat-box {
+      flex: 1;
+      min-height: 300px;
+      max-height: 50vh;
+      overflow-y: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex; flex-direction: column;
+      gap: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+      margin-bottom: 12px;
+    }
+
+    .msg { display:flex; gap:10px; animation: msgPop 0.3s ease both; }
+    .msg.user { flex-direction:row-reverse; }
+
+    .avatar {
+      width:34px; height:34px;
+      border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; flex-shrink:0;
+    }
+
+    .msg.user .avatar { background:linear-gradient(135deg,var(--blue),#7B6FFF); }
+    .msg.bot .avatar { background:linear-gradient(135deg,var(--saffron),var(--gold)); box-shadow:0 0 12px rgba(255,107,0,0.3); }
+
+    .bubble {
+      max-width:78%;
+      padding:10px 14px;
+      border-radius:14px;
+      font-size:0.9rem;
+      line-height:1.65;
+      white-space:pre-wrap;
+    }
+
+    .msg.user .bubble { background:var(--user-bubble); border:1px solid var(--user-border); border-top-right-radius:4px; }
+    .msg.bot .bubble { background:var(--bot-bubble); border:1px solid var(--bot-border); border-top-left-radius:4px; }
+
+    .lang-badge {
+      display:inline-block; font-size:0.62rem;
+      padding:2px 6px; border-radius:99px;
+      margin-bottom:4px; font-weight:600;
+    }
+
+    .lang-badge.hi { background:rgba(255,107,0,0.2); color:var(--saffron); }
+    .lang-badge.gu { background:rgba(255,179,0,0.2); color:var(--gold); }
+    .lang-badge.en { background:rgba(0,229,160,0.2); color:var(--green); }
+
+    .welcome { text-align:center; padding:24px 16px; color:var(--muted); }
+    .welcome .big { font-size:2rem; margin-bottom:8px; }
+    .welcome h3 { color:var(--text); font-family:'Baloo 2'; font-size:1.1rem; margin-bottom:6px; }
+    .welcome-langs { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+    .welcome-langs span { padding:3px 10px; border-radius:99px; font-size:0.8rem; }
+    .welcome-langs .hi { background:rgba(255,107,0,0.15); color:var(--saffron); }
+    .welcome-langs .gu { background:rgba(255,179,0,0.15); color:var(--gold); }
+    .welcome-langs .en { background:rgba(0,229,160,0.15); color:var(--green); }
+
+    .typing .bubble { display:flex; gap:5px; align-items:center; padding:12px 16px; }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--saffron); animation:bounce 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay:0.2s; }
+    .dot:nth-child(3) { animation-delay:0.4s; }
+
+    .input-area {
+      display:flex; gap:8px;
+      background:var(--input-bg);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:8px 8px 8px 16px;
+      transition:border-color 0.2s;
+    }
+
+    .input-area:focus-within { border-color:var(--saffron); box-shadow:0 0 16px rgba(255,107,0,0.1); }
+
+    #user-input {
+      flex:1; background:transparent; border:none; outline:none;
+      color:var(--text); font-family:inherit; font-size:0.9rem;
+      resize:none; max-height:80px;
+    }
+
+    #user-input::placeholder { color:var(--muted); }
+
+    .input-btns { display:flex; gap:6px; align-items:center; }
+
+    #voice-btn {
+      width:36px; height:36px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:8px;
+      cursor:pointer; color:var(--muted);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; transition:all 0.2s;
+    }
+
+    #voice-btn:hover { border-color:var(--saffron); color:var(--saffron); }
+    #voice-btn.listening { border-color:red; color:red; animation:pulse 1s infinite; }
+
+    #send-btn {
+      width:36px; height:36px;
+      background:linear-gradient(135deg,var(--saffron),var(--gold));
+      border:none; border-radius:8px;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; transition:transform 0.15s, box-shadow 0.15s;
+    }
+
+    #send-btn:hover { transform:scale(1.08); box-shadow:0 0 16px rgba(255,107,0,0.4); }
+
+    /* ── CALCULATOR PANEL ── */
+    #calc-panel {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .calc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      transition: border-color 0.2s;
+    }
+
+    .calc-card:hover { border-color: var(--saffron); }
+
+    .calc-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--saffron);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .calc-row {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .lang-pill.active-hi { border-color: #FF6B00; color: #FF6B00; background: rgba(255,107,0,0.08); }
-    .lang-pill.active-gu { border-color: #FFB300; color: #FFB300; background: rgba(255,179,0,0.08); }
-    .lang-pill.active-en { border-color: #00E5A0; color: #00E5A0; background: rgba(0,229,160,0.08); }
-
-    /* Language section tabs */
-    .lang-tabs {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 8px 0;
-      padding: 0 16px;
-      position: relative;
-      z-index: 1;
-      animation: fadeUp 0.7s 0.15s ease both;
+    .calc-row label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      width: 100px;
+      flex-shrink: 0;
     }
 
-    .lang-tab {
-      padding: 5px 16px;
+    .calc-input {
+      flex: 1;
+      padding: 7px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 8px;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .calc-input:focus { border-color: var(--saffron); }
+
+    .calc-select {
+      flex: 1;
+      padding: 7px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .calc-btn {
+      width: 100%;
+      padding: 9px;
+      background: linear-gradient(135deg, var(--saffron), var(--gold));
+      border: none; border-radius: 8px;
+      color: white; font-weight: 700;
+      font-size: 0.85rem; cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.15s;
+    }
+
+    .calc-btn:hover { transform: scale(1.02); }
+
+    .calc-result {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(0,229,160,0.1);
+      border: 1px solid rgba(0,229,160,0.3);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--green);
+      display: none;
+      font-weight: 600;
+    }
+
+    /* ── QUIZ PANEL ── */
+    #quiz-panel {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .quiz-header {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .quiz-cat-btn {
+      padding: 7px 16px;
+      border-radius: 99px;
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
@@ -137,370 +549,798 @@
       transition: all 0.2s;
     }
 
-    .lang-tab:hover { border-color: var(--saffron); color: var(--saffron); }
-    .lang-tab.selected { background: rgba(255,107,0,0.15); border-color: var(--saffron); color: var(--saffron); }
+    .quiz-cat-btn.active { background: rgba(255,107,0,0.15); border-color: var(--saffron); color: var(--saffron); }
 
-    /* Chips */
-    .chips-section {
-      width: 100%;
-      max-width: 860px;
-      padding: 0 16px;
-      position: relative;
-      z-index: 1;
-      animation: fadeUp 0.8s 0.2s ease both;
-    }
-
-    .chips-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-      text-align: center;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
-
-    .chip {
+    .quiz-box {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 99px;
-      padding: 5px 13px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .chip:hover { border-color: var(--saffron); color: var(--saffron); transform: translateY(-2px); }
-    .chip.hi { border-color: rgba(255,107,0,0.3); }
-    .chip.gu { border-color: rgba(255,179,0,0.3); }
-    .chip.en { border-color: rgba(0,229,160,0.3); }
-
-    /* Chat */
-    .chat-wrap {
-      width: 100%; max-width: 860px;
-      flex: 1; display: flex; flex-direction: column;
-      padding: 0 16px 16px;
-      position: relative; z-index: 1;
-      animation: fadeUp 0.8s 0.3s ease both;
-    }
-
-    #chat-box {
-      flex: 1;
-      min-height: 340px; max-height: 420px;
-      overflow-y: auto;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 20px;
-      display: flex; flex-direction: column;
-      gap: 16px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
+      max-width: 700px;
     }
 
-    .msg { display: flex; gap: 10px; animation: msgPop 0.3s ease both; }
-    .msg.user { flex-direction: row-reverse; }
-
-    .avatar {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
+    .quiz-progress {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 12px;
     }
 
-    .msg.user .avatar { background: linear-gradient(135deg, var(--blue), #7B6FFF); }
-    .msg.bot .avatar { background: linear-gradient(135deg, var(--saffron), #FFB300); box-shadow: 0 0 16px rgba(255,107,0,0.3); }
-
-    .bubble {
-      max-width: 78%;
-      padding: 12px 16px;
-      border-radius: 16px;
-      font-size: 0.93rem;
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .msg.user .bubble {
-      background: linear-gradient(135deg, rgba(77,166,255,0.15), rgba(123,111,255,0.15));
-      border: 1px solid rgba(77,166,255,0.25);
-      border-top-right-radius: 4px;
-    }
-
-    .msg.bot .bubble {
-      background: rgba(255,107,0,0.07);
-      border: 1px solid rgba(255,107,0,0.2);
-      border-top-left-radius: 4px;
-    }
-
-    /* Lang badge on bot message */
-    .lang-badge {
-      display: inline-block;
-      font-size: 0.65rem;
-      padding: 2px 7px;
-      border-radius: 99px;
-      margin-bottom: 6px;
+    .quiz-q {
+      font-size: 1rem;
       font-weight: 600;
-      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      line-height: 1.5;
     }
 
-    .lang-badge.hi { background: rgba(255,107,0,0.2); color: #FF6B00; }
-    .lang-badge.gu { background: rgba(255,179,0,0.2); color: #FFB300; }
-    .lang-badge.en { background: rgba(0,229,160,0.2); color: #00E5A0; }
-
-    .welcome {
-      text-align: center; padding: 24px 20px; color: var(--muted);
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .welcome .big { font-size: 2.2rem; margin-bottom: 8px; }
-    .welcome h3 { color: var(--text); font-family: 'Baloo 2'; font-size: 1.15rem; margin-bottom: 8px; }
-    .welcome .langs { display: flex; gap: 8px; justify-content: center; font-size: 0.85rem; flex-wrap: wrap; margin-top: 8px; }
-    .welcome .langs span { padding: 3px 10px; border-radius: 99px; }
-    .welcome .langs .hi { background: rgba(255,107,0,0.15); color: #FF6B00; }
-    .welcome .langs .gu { background: rgba(255,179,0,0.15); color: #FFB300; }
-    .welcome .langs .en { background: rgba(0,229,160,0.15); color: #00E5A0; }
 
-    .typing .bubble { display: flex; gap: 5px; align-items: center; padding: 14px 18px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--saffron); animation: bounce 1.2s infinite; }
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-
-    .input-area {
-      display: flex; gap: 10px; margin-top: 12px;
-      background: var(--card);
+    .quiz-opt {
+      padding: 10px 14px;
+      border-radius: 10px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 10px 10px 10px 18px;
-      transition: border-color 0.2s;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
     }
 
-    .input-area:focus-within { border-color: var(--saffron); box-shadow: 0 0 20px rgba(255,107,0,0.1); }
+    .quiz-opt:hover { border-color: var(--saffron); background: rgba(255,107,0,0.05); }
+    .quiz-opt.correct { border-color: var(--green); background: rgba(0,229,160,0.1); color: var(--green); }
+    .quiz-opt.wrong { border-color: #FF4444; background: rgba(255,68,68,0.1); color: #FF4444; }
 
-    #user-input {
-      flex: 1; background: transparent; border: none; outline: none;
-      color: var(--text); font-family: inherit; font-size: 0.95rem;
-      resize: none; max-height: 100px;
+    .quiz-explanation {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(77,166,255,0.1);
+      border: 1px solid rgba(77,166,255,0.2);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--blue);
+      display: none;
     }
 
-    #user-input::placeholder { color: var(--muted); }
-
-    #send-btn {
-      background: linear-gradient(135deg, var(--saffron), #FFB300);
-      border: none; border-radius: 10px;
-      width: 44px; height: 44px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 20px; transition: transform 0.15s, box-shadow 0.15s; flex-shrink: 0;
+    .quiz-next-btn {
+      margin-top: 12px;
+      padding: 9px 20px;
+      background: linear-gradient(135deg, var(--saffron), var(--gold));
+      border: none; border-radius: 8px;
+      color: white; font-weight: 700;
+      font-size: 0.85rem; cursor: pointer;
+      display: none;
     }
 
-    #send-btn:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(255,107,0,0.4); }
-    #send-btn:active { transform: scale(0.95); }
+    .quiz-score {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .quiz-score .score-big {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--saffron), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Panel headings */
+    .panel-heading {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .panel-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* Sidebar overlay for mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main { margin-left: 0; }
+      .menu-btn { display: flex; }
+      .mode-tabs { display: none; }
+      .topbar { padding: 10px 14px; }
+      #chat-box { max-height: 45vh; }
+      .bubble { max-width: 88%; font-size: 0.85rem; }
+      .calc-grid { grid-template-columns: 1fr; }
+      .mobile-tabs {
+        display: flex !important;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        z-index: 200;
+      }
+      .main { padding-bottom: 56px; }
+      #chat-panel { padding: 12px; }
+      #calc-panel, #quiz-panel { padding: 12px; }
+    }
+
+    .mobile-tabs {
+      display: none;
+    }
+
+    .mobile-tab {
+      flex: 1;
+      padding: 10px 4px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: color 0.2s;
+    }
+
+    .mobile-tab .tab-icon { font-size: 1.2rem; }
+    .mobile-tab.active { color: var(--saffron); }
 
     footer {
-      text-align: center; padding: 10px;
-      font-size: 0.72rem; color: var(--muted);
-      position: relative; z-index: 1;
+      text-align:center; padding:8px;
+      font-size:0.7rem; color:var(--muted);
+      border-top:1px solid var(--border);
     }
-    footer span { color: var(--saffron); }
+    footer span { color:var(--saffron); }
 
-    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes msgPop { from { opacity:0; transform:scale(0.95) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
-    @keyframes bounce { 0%,80%,100% { transform:translateY(0); } 40% { transform:translateY(-6px); } }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes msgPop { from{opacity:0;transform:scale(0.95) translateY(6px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-row">
-    <img src="/static/logo.png" width="52" height="52" style="border-radius:14px;object-fit:cover;"/>
-    <h1>CircuitMitra AI</h1>
-  </div>
-  <p class="tagline">India's First ECE AI • <span>Hindi • ગુજરાતી • English</span> • Auto Language Detection 🇮🇳</p>
-</header>
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
-<!-- Language indicator pills -->
-<div class="lang-bar">
-  <div class="lang-pill active-hi">🟠 हिंदी</div>
-  <div class="lang-pill active-gu">🟡 ગુજરાતી</div>
-  <div class="lang-pill active-en">🟢 English</div>
-</div>
-
-<!-- Quick chips - all 3 languages -->
-<div class="chips-section">
-  <!-- Language filter tabs -->
-  <div class="lang-tabs">
-    <button class="lang-tab selected" onclick="filterChips('all')">All</button>
-    <button class="lang-tab" onclick="filterChips('hi')">हिंदी</button>
-    <button class="lang-tab" onclick="filterChips('gu')">ગુજરાતી</button>
-    <button class="lang-tab" onclick="filterChips('en')">English</button>
+<!-- ── SIDEBAR ── -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <img src="/static/logo.png" alt="CM" onerror="this.parentElement.innerHTML='<div class=sidebar-logo-fallback>⚡</div>'"/>
+    </div>
+    <div class="sidebar-title">CircuitMitra AI</div>
   </div>
 
-  <div class="chips" id="chips-container">
-    <!-- Hindi chips -->
-    <div class="chip hi" onclick="quickAsk('स्कैन चेन क्या होता है?')">🔬 स्कैन चेन</div>
-    <div class="chip hi" onclick="quickAsk('ATPG क्या है DFT में?')">🧪 ATPG</div>
-    <div class="chip hi" onclick="quickAsk('LED के लिए 5V पर resistance कितनी?')">💡 LED सर्किट</div>
-    <div class="chip hi" onclick="quickAsk('Op-amp क्या होता है?')">⚡ Op-Amp</div>
+  <button class="new-chat-btn" onclick="newChat()">
+    ✏️ New Chat
+  </button>
 
-    <!-- Gujarati chips -->
-    <div class="chip gu" onclick="quickAsk('સ્કેન ચેઇન શું છે?')">🔬 સ્કેન ચેઇન</div>
-    <div class="chip gu" onclick="quickAsk('JTAG શું છે અને કેવી રીતે કામ કરે છે?')">🔧 JTAG</div>
-    <div class="chip gu" onclick="quickAsk('LED માટે resistance કેટલી જોઈએ?')">💡 LED સર્કિટ</div>
-    <div class="chip gu" onclick="quickAsk('DFT એટલે શું?')">🧠 DFT</div>
+  <div class="history-label">Chat History</div>
+  <div class="history-list" id="history-list">
+    <div style="padding:8px 10px;font-size:0.8rem;color:var(--muted)">No chats yet...</div>
+  </div>
 
-    <!-- English chips -->
-    <div class="chip en" onclick="quickAsk('What is scan chain in DFT?')">🔬 Scan Chain</div>
-    <div class="chip en" onclick="quickAsk('Explain ATPG and fault coverage')">🧪 ATPG</div>
-    <div class="chip en" onclick="quickAsk('How to design an op-amp circuit?')">⚡ Op-Amp</div>
-    <div class="chip en" onclick="quickAsk('What is JTAG boundary scan?')">🔧 JTAG</div>
+  <div class="sidebar-bottom">
+    <button class="icon-btn" onclick="clearHistory()">🗑️ Clear</button>
+    <button class="icon-btn" onclick="exportChat()">💾 Export</button>
   </div>
 </div>
 
-<div class="chat-wrap">
-  <div id="chat-box">
-    <div class="welcome">
-      <div class="big">🇮🇳</div>
-      <h3>CircuitMitra AI mein aapka swagat hai!</h3>
-      <p>Apni language mein ECE ke sawaal puchho — main automatically samjhunga!</p>
-      <div class="langs">
-        <span class="hi">हिंदी में पूछो</span>
-        <span class="gu">ગુજરાતીમાં પૂછો</span>
-        <span class="en">Ask in English</span>
+<!-- ── MAIN ── -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-title">⚡ CircuitMitra AI</div>
+    <div class="topbar-actions">
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchPanel('chat',this)">💬 Chat</button>
+        <button class="mode-tab" onclick="switchPanel('calc',this)">🔢 Calculator</button>
+        <button class="mode-tab" onclick="switchPanel('quiz',this)">🧪 DFT Quiz</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+    </div>
+  </div>
+
+  <!-- ── CHAT PANEL ── -->
+  <div class="panel active" id="chat-panel-wrap">
+    <div id="chat-panel">
+      <!-- Lang filter -->
+      <div class="lang-chips">
+        <span class="lang-chip sel" onclick="filterQ('all',this)">All</span>
+        <span class="lang-chip" onclick="filterQ('hi',this)">🟠 हिंदी</span>
+        <span class="lang-chip" onclick="filterQ('gu',this)">🟡 ગુજરાતી</span>
+        <span class="lang-chip" onclick="filterQ('en',this)">🟢 English</span>
+      </div>
+
+      <!-- Quick chips -->
+      <div class="quick-chips" id="qchips">
+        <div class="qchip hi" onclick="qa('स्कैन चेन क्या है?')">🔬 स्कैन चेन</div>
+        <div class="qchip hi" onclick="qa('ATPG क्या है?')">🧪 ATPG</div>
+        <div class="qchip hi" onclick="qa('Op-amp क्या होता है?')">⚡ Op-Amp</div>
+        <div class="qchip hi" onclick="qa('LED के लिए resistance?')">💡 LED</div>
+        <div class="qchip gu" onclick="qa('સ્કેન ચેઇન શું છે?')">🔬 સ્કેન ચેઇન</div>
+        <div class="qchip gu" onclick="qa('JTAG શું છે?')">🔧 JTAG</div>
+        <div class="qchip gu" onclick="qa('DFT એટલે શું?')">🧠 DFT</div>
+        <div class="qchip en" onclick="qa('What is scan chain?')">🔬 Scan Chain</div>
+        <div class="qchip en" onclick="qa('Explain ATPG')">🧪 ATPG</div>
+        <div class="qchip en" onclick="qa('What is JTAG?')">🔧 JTAG</div>
+      </div>
+
+      <div id="chat-box">
+        <div class="welcome">
+          <div class="big">🇮🇳</div>
+          <h3>CircuitMitra AI mein swagat!</h3>
+          <p>Apni language mein ECE ke sawaal puchho!</p>
+          <div class="welcome-langs">
+            <span class="hi">हिंदी में पूछो</span>
+            <span class="gu">ગુજરાતીમાં પૂછો</span>
+            <span class="en">Ask in English</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <textarea id="user-input" rows="1" placeholder="Hindi, Gujarati ya English mein puchho... ⚡"></textarea>
+        <div class="input-btns">
+          <button id="voice-btn" onclick="toggleVoice()" title="Voice input">🎤</button>
+          <button id="send-btn" onclick="sendMsg()">➤</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="input-area">
-    <textarea id="user-input" rows="1"
-      placeholder="Hindi, Gujarati ya English mein puchho... ⚡"></textarea>
-    <button id="send-btn" onclick="sendMessage()">➤</button>
+  <!-- ── CALCULATOR PANEL ── -->
+  <div class="panel" id="calc-panel-wrap">
+    <div id="calc-panel">
+      <div class="panel-heading">🔢 Circuit Calculator</div>
+      <div class="panel-sub">ECE formulas — instant calculate karo</div>
+
+      <div class="calc-grid">
+
+        <!-- LED Resistor -->
+        <div class="calc-card">
+          <h3>💡 LED Resistance</h3>
+          <div class="calc-row">
+            <label>Supply (Vs)</label>
+            <input class="calc-input" id="led-vs" type="number" placeholder="e.g. 5" value="5"/>
+            <span style="color:var(--muted);font-size:0.8rem">V</span>
+          </div>
+          <div class="calc-row">
+            <label>LED Voltage (Vf)</label>
+            <input class="calc-input" id="led-vf" type="number" placeholder="e.g. 2" value="2"/>
+            <span style="color:var(--muted);font-size:0.8rem">V</span>
+          </div>
+          <div class="calc-row">
+            <label>LED Current (If)</label>
+            <input class="calc-input" id="led-if" type="number" placeholder="e.g. 20" value="20"/>
+            <span style="color:var(--muted);font-size:0.8rem">mA</span>
+          </div>
+          <button class="calc-btn" onclick="calcLED()">Calculate ⚡</button>
+          <div class="calc-result" id="led-result"></div>
+        </div>
+
+        <!-- Ohm's Law -->
+        <div class="calc-card">
+          <h3>⚡ Ohm's Law</h3>
+          <div class="calc-row">
+            <label>Voltage (V)</label>
+            <input class="calc-input" id="ohm-v" type="number" placeholder="Volts"/>
+          </div>
+          <div class="calc-row">
+            <label>Current (I)</label>
+            <input class="calc-input" id="ohm-i" type="number" placeholder="Amps"/>
+          </div>
+          <div class="calc-row">
+            <label>Resistance (R)</label>
+            <input class="calc-input" id="ohm-r" type="number" placeholder="Ohms"/>
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">Koi 2 bharo, teesra calculate hoga</p>
+          <button class="calc-btn" onclick="calcOhm()">Calculate ⚡</button>
+          <div class="calc-result" id="ohm-result"></div>
+        </div>
+
+        <!-- RC Filter -->
+        <div class="calc-card">
+          <h3>📡 RC Filter Frequency</h3>
+          <div class="calc-row">
+            <label>Resistance (R)</label>
+            <input class="calc-input" id="rc-r" type="number" placeholder="e.g. 1000"/>
+            <span style="color:var(--muted);font-size:0.8rem">Ω</span>
+          </div>
+          <div class="calc-row">
+            <label>Capacitance (C)</label>
+            <input class="calc-input" id="rc-c" type="number" placeholder="e.g. 100"/>
+            <select class="calc-select" id="rc-unit" style="max-width:70px">
+              <option value="1e-6">μF</option>
+              <option value="1e-9">nF</option>
+              <option value="1e-12">pF</option>
+            </select>
+          </div>
+          <button class="calc-btn" onclick="calcRC()">Calculate ⚡</button>
+          <div class="calc-result" id="rc-result"></div>
+        </div>
+
+        <!-- Voltage Divider -->
+        <div class="calc-card">
+          <h3>🔌 Voltage Divider</h3>
+          <div class="calc-row">
+            <label>Input (Vin)</label>
+            <input class="calc-input" id="vd-vin" type="number" placeholder="e.g. 12"/>
+            <span style="color:var(--muted);font-size:0.8rem">V</span>
+          </div>
+          <div class="calc-row">
+            <label>R1</label>
+            <input class="calc-input" id="vd-r1" type="number" placeholder="e.g. 10000"/>
+            <span style="color:var(--muted);font-size:0.8rem">Ω</span>
+          </div>
+          <div class="calc-row">
+            <label>R2</label>
+            <input class="calc-input" id="vd-r2" type="number" placeholder="e.g. 10000"/>
+            <span style="color:var(--muted);font-size:0.8rem">Ω</span>
+          </div>
+          <button class="calc-btn" onclick="calcVD()">Calculate ⚡</button>
+          <div class="calc-result" id="vd-result"></div>
+        </div>
+
+      </div>
+    </div>
   </div>
+
+  <!-- ── QUIZ PANEL ── -->
+  <div class="panel" id="quiz-panel-wrap">
+    <div id="quiz-panel">
+      <div class="panel-heading">🧪 DFT Interview Quiz</div>
+      <div class="panel-sub">Micron / eInfochips interview practice karo</div>
+
+      <div class="quiz-header">
+        <button class="quiz-cat-btn active" onclick="setQuizCat('dft',this)">DFT/Scan</button>
+        <button class="quiz-cat-btn" onclick="setQuizCat('vlsi',this)">VLSI</button>
+        <button class="quiz-cat-btn" onclick="setQuizCat('digital',this)">Digital</button>
+        <button class="quiz-cat-btn" onclick="setQuizCat('circuit',this)">Circuit</button>
+      </div>
+
+      <div class="quiz-box">
+        <div class="quiz-progress" id="quiz-progress">Question 1 / 5</div>
+        <div class="quiz-q" id="quiz-q">Loading...</div>
+        <div class="quiz-options" id="quiz-opts"></div>
+        <div class="quiz-explanation" id="quiz-exp"></div>
+        <button class="quiz-next-btn" id="quiz-next" onclick="nextQ()">Next Question →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile bottom tabs -->
+  <div class="mobile-tabs" id="mobile-tabs">
+    <button class="mobile-tab active" onclick="switchPanel('chat',this,true)" id="mtab-chat">
+      <span class="tab-icon">💬</span>Chat
+    </button>
+    <button class="mobile-tab" onclick="switchPanel('calc',this,true)" id="mtab-calc">
+      <span class="tab-icon">🔢</span>Calc
+    </button>
+    <button class="mobile-tab" onclick="switchPanel('quiz',this,true)" id="mtab-quiz">
+      <span class="tab-icon">🧪</span>Quiz
+    </button>
+    <button class="mobile-tab" onclick="toggleTheme()">
+      <span class="tab-icon" id="mobile-theme-icon">🌙</span>Theme
+    </button>
+  </div>
+
+  <footer>Made with ❤️ for India • <span>CircuitMitra AI</span> • Hindi • ગુજરાતી • English 🇮🇳</footer>
 </div>
 
-<footer>
-  Made with ❤️ for India • <span>CircuitMitra AI</span> • Auto detects Hindi • ગુજરાતી • English
-</footer>
-
 <script>
-  const chatBox = document.getElementById('chat-box');
-  const input = document.getElementById('user-input');
+// ── THEME ──
+let isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('mobile-theme-icon').textContent = isDark ? '🌙' : '☀️';
+}
 
-  // Detect language from text
-  function detectLang(text) {
-    const gujaratiRange = /[\u0A80-\u0AFF]/;
-    const hindiRange = /[\u0900-\u097F]/;
-    if (gujaratiRange.test(text)) return 'gu';
-    if (hindiRange.test(text)) return 'hi';
-    return 'en';
+// ── SIDEBAR ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ── PANELS ──
+function switchPanel(name, btn, isMobile=false) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(name+'-panel-wrap').classList.add('active');
+  if (!isMobile) {
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if (name === 'quiz') loadQuiz();
+}
+
+// ── CHAT HISTORY ──
+let chatSessions = JSON.parse(localStorage.getItem('cm_sessions') || '[]');
+let currentSessionId = null;
+let currentMessages = [];
+
+function saveSession(title, messages) {
+  if (!currentSessionId) {
+    currentSessionId = Date.now().toString();
+  }
+  const idx = chatSessions.findIndex(s => s.id === currentSessionId);
+  const session = { id: currentSessionId, title: title.slice(0,40), messages, time: Date.now() };
+  if (idx >= 0) chatSessions[idx] = session;
+  else chatSessions.unshift(session);
+  localStorage.setItem('cm_sessions', JSON.stringify(chatSessions.slice(0,50)));
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!chatSessions.length) {
+    list.innerHTML = '<div style="padding:8px 10px;font-size:0.8rem;color:var(--muted)">No chats yet...</div>';
+    return;
+  }
+  list.innerHTML = chatSessions.map(s => `
+    <div class="history-item ${s.id===currentSessionId?'active':''}" onclick="loadSession('${s.id}')">
+      💬 ${s.title || 'Chat'}
+      <span class="del-btn" onclick="event.stopPropagation();deleteSession('${s.id}')">🗑️</span>
+    </div>
+  `).join('');
+}
+
+function loadSession(id) {
+  const s = chatSessions.find(x => x.id === id);
+  if (!s) return;
+  currentSessionId = id;
+  currentMessages = s.messages;
+  const box = document.getElementById('chat-box');
+  box.innerHTML = '';
+  s.messages.forEach(m => addBubble(m.text, m.role, m.lang));
+  renderHistory();
+  closeSidebar();
+}
+
+function deleteSession(id) {
+  chatSessions = chatSessions.filter(s => s.id !== id);
+  localStorage.setItem('cm_sessions', JSON.stringify(chatSessions));
+  if (currentSessionId === id) newChat();
+  else renderHistory();
+}
+
+function newChat() {
+  currentSessionId = null;
+  currentMessages = [];
+  const box = document.getElementById('chat-box');
+  box.innerHTML = `
+    <div class="welcome">
+      <div class="big">🇮🇳</div>
+      <h3>CircuitMitra AI mein swagat!</h3>
+      <p>Apni language mein ECE ke sawaal puchho!</p>
+      <div class="welcome-langs">
+        <span class="hi">हिंदी में पूछो</span>
+        <span class="gu">ગુજરાતીમાં પૂછો</span>
+        <span class="en">Ask in English</span>
+      </div>
+    </div>`;
+  renderHistory();
+  closeSidebar();
+}
+
+function clearHistory() {
+  if (confirm('Sab history delete karni hai?')) {
+    chatSessions = [];
+    localStorage.removeItem('cm_sessions');
+    newChat();
+  }
+}
+
+function exportChat() {
+  if (!currentMessages.length) return alert('Koi chat nahi hai export ke liye!');
+  const text = currentMessages.map(m => `${m.role.toUpperCase()}: ${m.text}`).join('\n\n');
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'circuitmitra-chat.txt';
+  a.click();
+}
+
+// ── LANGUAGE ──
+function detectLang(t) {
+  if (/[\u0A80-\u0AFF]/.test(t)) return 'gu';
+  if (/[\u0900-\u097F]/.test(t)) return 'hi';
+  return 'en';
+}
+
+function filterQ(lang, btn) {
+  document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.querySelectorAll('.qchip').forEach(c => {
+    c.style.display = (lang==='all' || c.classList.contains(lang)) ? 'block' : 'none';
+  });
+}
+
+// ── CHAT ──
+const input = document.getElementById('user-input');
+
+input.addEventListener('keydown', e => {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+
+input.addEventListener('input', () => {
+  input.style.height='auto';
+  input.style.height=input.scrollHeight+'px';
+});
+
+function qa(q) { input.value=q; sendMsg(); }
+
+function addBubble(text, role, lang) {
+  const box = document.getElementById('chat-box');
+  const w = box.querySelector('.welcome');
+  if (w) w.remove();
+
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  const av = document.createElement('div');
+  av.className = 'avatar';
+  av.textContent = role==='user' ? '👤' : '⚡';
+
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+
+  if (role==='bot' && lang) {
+    const badge = document.createElement('div');
+    badge.className = `lang-badge ${lang}`;
+    badge.textContent = lang==='hi'?'हिंदी':lang==='gu'?'ગુજરાતી':'English';
+    bub.appendChild(badge);
+    bub.appendChild(document.createElement('br'));
   }
 
-  const langLabels = {
-    hi: { label: 'हिंदी', cls: 'hi' },
-    gu: { label: 'ગુજરાતી', cls: 'gu' },
-    en: { label: 'English', cls: 'en' }
-  };
+  bub.appendChild(document.createTextNode(text));
+  div.appendChild(av); div.appendChild(bub);
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
 
-  // Filter chips by language
-  function filterChips(lang) {
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('selected'));
-    event.target.classList.add('selected');
+function showTyping() {
+  const div = document.createElement('div');
+  div.className='msg bot typing'; div.id='typing';
+  div.innerHTML=`<div class="avatar">⚡</div><div class="bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  document.getElementById('chat-box').appendChild(div);
+  document.getElementById('chat-box').scrollTop=9999;
+}
 
-    document.querySelectorAll('.chip').forEach(chip => {
-      if (lang === 'all') {
-        chip.style.display = 'block';
-      } else {
-        chip.style.display = chip.classList.contains(lang) ? 'block' : 'none';
-      }
+async function sendMsg() {
+  const msg = input.value.trim();
+  if (!msg) return;
+  addBubble(msg, 'user', null);
+  currentMessages.push({role:'user', text:msg, lang:null});
+  input.value=''; input.style.height='auto';
+  showTyping();
+
+  try {
+    const res = await fetch('/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({message:msg})
     });
+    const data = await res.json();
+    document.getElementById('typing')?.remove();
+    const rLang = detectLang(data.response);
+    addBubble(data.response, 'bot', rLang);
+    currentMessages.push({role:'bot', text:data.response, lang:rLang});
+    saveSession(msg, currentMessages);
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    addBubble('❌ Error! app.py chal raha hai kya?', 'bot', 'en');
   }
+}
 
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+// ── VOICE ──
+let recognition = null;
+let isListening = false;
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    return alert('Tumhara browser voice support nahi karta! Chrome use karo.');
+  }
+  if (isListening) {
+    recognition.stop(); return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'hi-IN';
+  recognition.interimResults = false;
+  recognition.onstart = () => {
+    isListening=true;
+    document.getElementById('voice-btn').classList.add('listening');
+  };
+  recognition.onresult = e => {
+    input.value = e.results[0][0].transcript;
+    sendMsg();
+  };
+  recognition.onend = () => {
+    isListening=false;
+    document.getElementById('voice-btn').classList.remove('listening');
+  };
+  recognition.start();
+}
+
+// ── CALCULATORS ──
+function showResult(id, text) {
+  const el = document.getElementById(id);
+  el.textContent = text; el.style.display='block';
+}
+
+function calcLED() {
+  const vs=parseFloat(document.getElementById('led-vs').value);
+  const vf=parseFloat(document.getElementById('led-vf').value);
+  const iF=parseFloat(document.getElementById('led-if').value)/1000;
+  if (isNaN(vs)||isNaN(vf)||isNaN(iF)) return showResult('led-result','⚠️ Sab values bharo!');
+  const R = (vs-vf)/iF;
+  showResult('led-result', `✅ Resistance = ${R.toFixed(1)} Ω\n(Standard: use ${R<100?'100Ω':R<220?'220Ω':R<330?'330Ω':'470Ω'})`);
+}
+
+function calcOhm() {
+  const v=parseFloat(document.getElementById('ohm-v').value);
+  const i=parseFloat(document.getElementById('ohm-i').value);
+  const r=parseFloat(document.getElementById('ohm-r').value);
+  const known = [!isNaN(v),!isNaN(i),!isNaN(r)].filter(Boolean).length;
+  if (known<2) return showResult('ohm-result','⚠️ Koi bhi 2 values bharo!');
+  if (isNaN(v)) showResult('ohm-result',`✅ Voltage = ${(i*r).toFixed(3)} V`);
+  else if (isNaN(i)) showResult('ohm-result',`✅ Current = ${(v/r*1000).toFixed(3)} mA`);
+  else showResult('ohm-result',`✅ Resistance = ${(v/i).toFixed(2)} Ω`);
+}
+
+function calcRC() {
+  const R=parseFloat(document.getElementById('rc-r').value);
+  const C=parseFloat(document.getElementById('rc-c').value);
+  const unit=parseFloat(document.getElementById('rc-unit').value);
+  if (isNaN(R)||isNaN(C)) return showResult('rc-result','⚠️ Values bharo!');
+  const fc = 1/(2*Math.PI*R*C*unit);
+  showResult('rc-result',`✅ Cutoff Frequency = ${fc>=1000?( fc/1000).toFixed(2)+' kHz':fc.toFixed(2)+' Hz'}\nTime Constant τ = ${(R*C*unit*1000).toFixed(3)} ms`);
+}
+
+function calcVD() {
+  const vin=parseFloat(document.getElementById('vd-vin').value);
+  const r1=parseFloat(document.getElementById('vd-r1').value);
+  const r2=parseFloat(document.getElementById('vd-r2').value);
+  if (isNaN(vin)||isNaN(r1)||isNaN(r2)) return showResult('vd-result','⚠️ Values bharo!');
+  const vout = vin*(r2/(r1+r2));
+  showResult('vd-result',`✅ Vout = ${vout.toFixed(3)} V\nRatio = ${(vout/vin*100).toFixed(1)}%`);
+}
+
+// ── QUIZ ──
+const quizData = {
+  dft: [
+    { q:"DFT ka full form kya hai?", opts:["Design for Testing","Design for Testability","Digital Fault Testing","Device Functional Test"], ans:1, exp:"DFT = Design for Testability. Ye chip manufacturing ke baad testing ke liye design mein features add karta hai." },
+    { q:"Scan chain mein kaun sa flip-flop use hota hai?", opts:["D flip-flop","T flip-flop","Scan flip-flop (SFF)","JK flip-flop"], ans:2, exp:"Scan flip-flop (SFF) use hota hai jisme extra SI (Scan In) aur SE (Scan Enable) pins hote hain." },
+    { q:"ATPG ka full form kya hai?", opts:["Automatic Test Pattern Generation","Automated Testing Program Generator","Advanced Test Process Guide","Automatic Transistor Parameter Generator"], ans:0, exp:"ATPG = Automatic Test Pattern Generation. Ye automatically test vectors generate karta hai faults detect karne ke liye." },
+    { q:"Stuck-at fault model mein kya hota hai?", opts:["Wire hamesha toggle karti hai","Wire hamesha 0 ya 1 pe stuck rehti hai","Clock signal ruk jaata hai","Power supply fail ho jaati hai"], ans:1, exp:"Stuck-at fault: wire permanently logic 0 (SA0) ya logic 1 (SA1) pe stuck rehti hai - physical defect ki wajah se." },
+    { q:"BIST ka full form kya hai?", opts:["Built-In Self Test","Binary Input Signal Test","Basic IC Stability Test","Board Integration System Test"], ans:0, exp:"BIST = Built-In Self Test. Chip khud apne aap ko test kar sakti hai bina external tester ke." },
+    { q:"JTAG standard ka IEEE number kya hai?", opts:["IEEE 1149.1","IEEE 802.11","IEEE 1284","IEEE 1394"], ans:0, exp:"JTAG = IEEE 1149.1 standard. Ye boundary scan ke liye use hota hai PCB level testing mein." },
+    { q:"Fault coverage kya hoti hai?", opts:["Total faults in design","Percentage of faults detected by test patterns","Number of test vectors","Scan chain length"], ans:1, exp:"Fault coverage = (Detected faults / Total faults) × 100%. High fault coverage matlab better test quality." },
+  ],
+  vlsi: [
+    { q:"RTL ka full form kya hai?", opts:["Register Transfer Level","Real Time Logic","Resistor Transistor Logic","Register Timing Language"], ans:0, exp:"RTL = Register Transfer Level. Ye hardware design ka abstraction level hai jahan logic registers ke beech data transfer describe karta hai." },
+    { q:"Setup time violation kya hota hai?", opts:["Clock frequency zyada hoti hai","Data clock edge se pehle stable nahi hota","Power consumption zyada hoti hai","Output delay zyada hoti hai"], ans:1, exp:"Setup time violation tab hota hai jab data flip-flop ke clock edge se required setup time pehle stable nahi hota." },
+    { q:"Synthesis tool ka kaam kya hai?", opts:["RTL to Gate-level netlist","Gate to Layout","Layout to Mask","Mask to Wafer"], ans:0, exp:"Synthesis: RTL (Verilog/VHDL) ko gate-level netlist mein convert karta hai using standard cell library." },
+    { q:"Hold time violation fix karne ka tarika?", opts:["Clock frequency badhao","Buffer add karo data path mein","Power supply badhao","Scan chain badlo"], ans:1, exp:"Hold time violation fix: data path mein buffer/delay add karo taaki data zyada time tak stable rahe." },
+    { q:"LVS check kya verify karta hai?", opts:["Layout vs Schematic","Length vs Spacing","Logic vs Simulation","Layer vs Structure"], ans:0, exp:"LVS = Layout vs Schematic. Verify karta hai ki physical layout schematic ke saath match karta hai." },
+  ],
+  digital: [
+    { q:"D flip-flop ka output kab change hota hai?", opts:["Jab D change ho","Clock edge pe","Reset hone pe","Power on pe"], ans:1, exp:"D flip-flop ka output clock edge (rising ya falling) pe change hota hai - D input ki value capture karta hai." },
+    { q:"2-input NAND gate ka truth table: A=1,B=1 output?", opts:["0","1","Z","X"], ans:0, exp:"NAND gate: A=1,B=1 → Output=0. NAND = NOT AND. AND ka complement." },
+    { q:"8-bit binary 11111111 decimal mein kya hai?", opts:["254","255","256","128"], ans:1, exp:"11111111 = 2^8 - 1 = 256 - 1 = 255. Formula: sab bits 1 hone pe max value = 2^n - 1." },
+    { q:"Mealy machine aur Moore machine mein kya fark hai?", opts:["Clock speed","Output dependency - Mealy:input+state, Moore:state only","Power consumption","Number of states"], ans:1, exp:"Moore: output sirf current state pe depend karta hai. Mealy: output current state aur input dono pe depend karta hai." },
+    { q:"XOR gate ka kaam kya hai?", opts:["AND operation","OR operation","Inputs same ho to 0, different ho to 1","Inputs same ho to 1, different ho to 0"], ans:2, exp:"XOR (Exclusive OR): dono inputs same → 0, different → 1. Adder circuits mein use hota hai." },
+  ],
+  circuit: [
+    { q:"Ohm's law kya hai?", opts:["V = IR","P = IV","Q = CV","F = ma"], ans:0, exp:"Ohm's Law: V = IR. Voltage = Current × Resistance. Basic circuit analysis ka foundation." },
+    { q:"Op-amp ki ideal input impedance kitni hoti hai?", opts:["Zero","Very low","Infinite","100kΩ"], ans:2, exp:"Ideal op-amp ki input impedance infinite hoti hai taaki source se koi current na le. Real op-amp mein MΩ range mein hoti hai." },
+    { q:"RC low-pass filter ki cutoff frequency formula?", opts:["f = 2πRC","f = 1/(2πRC)","f = RC/2π","f = 2π/RC"], ans:1, exp:"Cutoff frequency fc = 1/(2πRC). Is frequency pe output -3dB hota hai (-3dB = 0.707 × input)." },
+    { q:"Zener diode primarily kisliye use hoti hai?", opts:["Amplification","Voltage regulation","Switching","Rectification"], ans:1, exp:"Zener diode voltage regulation ke liye use hoti hai - reverse breakdown voltage pe constant voltage maintain karti hai." },
+    { q:"Capacitor DC circuit mein kya karta hai?", opts:["Short circuit","Open circuit","Resistance provide karta hai","Inductance provide karta hai"], ans:1, exp:"DC steady state mein capacitor fully charge ho jaata hai aur open circuit ki tarah kaam karta hai - no current flows." },
+  ]
+};
+
+let quizCat = 'dft';
+let quizIdx = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let shuffledQ = [];
+
+function setQuizCat(cat, btn) {
+  quizCat = cat;
+  document.querySelectorAll('.quiz-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadQuiz();
+}
+
+function loadQuiz() {
+  quizIdx = 0; quizScore = 0; quizAnswered = false;
+  shuffledQ = [...quizData[quizCat]].sort(() => Math.random()-0.5);
+  showQ();
+}
+
+function showQ() {
+  const total = shuffledQ.length;
+  if (quizIdx >= total) { showScore(); return; }
+  const q = shuffledQ[quizIdx];
+  document.getElementById('quiz-progress').textContent = `Question ${quizIdx+1} / ${total} • Score: ${quizScore}`;
+  document.getElementById('quiz-q').textContent = q.q;
+  document.getElementById('quiz-exp').style.display = 'none';
+  document.getElementById('quiz-next').style.display = 'none';
+  quizAnswered = false;
+
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((opt,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = `${['A','B','C','D'][i]}. ${opt}`;
+    btn.onclick = () => answerQ(i, btn);
+    opts.appendChild(btn);
   });
+}
 
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = input.scrollHeight + 'px';
-  });
+function answerQ(idx, btn) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = shuffledQ[quizIdx];
+  const allOpts = document.querySelectorAll('.quiz-opt');
+  allOpts[q.ans].classList.add('correct');
+  if (idx !== q.ans) btn.classList.add('wrong');
+  else quizScore++;
 
-  function quickAsk(q) { input.value = q; sendMessage(); }
+  const exp = document.getElementById('quiz-exp');
+  exp.textContent = '💡 ' + q.exp;
+  exp.style.display = 'block';
+  document.getElementById('quiz-next').style.display = 'inline-block';
+}
 
-  function addMessage(text, role, lang) {
-    const welcome = chatBox.querySelector('.welcome');
-    if (welcome) welcome.remove();
+function nextQ() { quizIdx++; showQ(); }
 
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
+function showScore() {
+  const total = shuffledQ.length;
+  const pct = Math.round(quizScore/total*100);
+  document.getElementById('quiz-q').innerHTML = '';
+  document.getElementById('quiz-opts').innerHTML = `
+    <div class="quiz-score">
+      <div class="score-big">${quizScore}/${total}</div>
+      <div style="font-size:1.1rem;margin:8px 0">${pct>=80?'🎉 Excellent!':pct>=60?'👍 Good!':'📚 Aur practice karo!'}</div>
+      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">${pct}% correct</div>
+      <button class="calc-btn" style="max-width:200px" onclick="loadQuiz()">🔄 Try Again</button>
+    </div>`;
+  document.getElementById('quiz-progress').textContent = 'Quiz Complete!';
+  document.getElementById('quiz-exp').style.display='none';
+  document.getElementById('quiz-next').style.display='none';
+}
 
-    const avatar = document.createElement('div');
-    avatar.className = 'avatar';
-    avatar.textContent = role === 'user' ? '👤' : '⚡';
-
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-
-    // Add language badge for bot messages
-    if (role === 'bot' && lang) {
-      const badge = document.createElement('div');
-      badge.className = `lang-badge ${lang}`;
-      badge.textContent = langLabels[lang]?.label || lang;
-      bubble.appendChild(badge);
-      bubble.appendChild(document.createElement('br'));
-    }
-
-    const textNode = document.createTextNode(text);
-    bubble.appendChild(textNode);
-
-    div.appendChild(avatar);
-    div.appendChild(bubble);
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function showTyping() {
-    const div = document.createElement('div');
-    div.className = 'msg bot typing'; div.id = 'typing';
-    div.innerHTML = `<div class="avatar">⚡</div><div class="bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function removeTyping() {
-    const t = document.getElementById('typing');
-    if (t) t.remove();
-  }
-
-  async function sendMessage() {
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    const userLang = detectLang(msg);
-    addMessage(msg, 'user', null);
-    input.value = '';
-    input.style.height = 'auto';
-    showTyping();
-
-    try {
-      const res = await fetch('/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg })
-      });
-      const data = await res.json();
-      removeTyping();
-      const responseLang = detectLang(data.response);
-      addMessage(data.response, 'bot', responseLang);
-    } catch (err) {
-      removeTyping();
-      addMessage('❌ Connection error. app.py chal raha hai kya?', 'bot', 'en');
-    }
-  }
+// Init
+renderHistory();
+loadQuiz();
 </script>
 </body>
 </html>
